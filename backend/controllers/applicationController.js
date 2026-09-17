@@ -64,9 +64,6 @@ const applyForTask = asyncHandler(async (req, res) => {
     matchScore: match.score,
   });
 
-  task.status = 'APPLIED';
-  await task.save();
-
   const notif = await Notification.create({
     user: task.requester,
     title: 'New Volunteer Application! 🤝',
@@ -101,6 +98,9 @@ const getTaskApplications = asyncHandler(async (req, res) => {
 // @access  Private (Requester owner / Admin)
 const updateApplicationStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
+  if (!['ACCEPTED', 'REJECTED'].includes(status)) {
+    res.status(400); throw new Error('Invalid application status');
+  }
   const application = await Application.findById(req.params.id).populate('task');
   if (!application) { res.status(404); throw new Error('Application not found'); }
 
@@ -150,6 +150,7 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
 // @route   POST /api/tasks/:id/complete
 // @access  Private (Assigned Volunteer)
 const completeTask = asyncHandler(async (req, res) => {
+  const { completionLocation } = req.body;
   const task = await Task.findById(req.params.id);
   if (!task) { res.status(404); throw new Error('Task not found'); }
 
@@ -162,8 +163,13 @@ const completeTask = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error(`Cannot complete task with status: ${task.status}`);
   }
+  if (task.locationMode === 'offline' && !completionLocation?.trim()) {
+    res.status(400);
+    throw new Error('Please confirm the offline task location before completing');
+  }
 
   task.status = 'COMPLETED';
+  if (completionLocation?.trim()) task.completionLocation = completionLocation.trim();
   await task.save();
 
   const notif = await Notification.create({
@@ -187,6 +193,9 @@ const confirmTaskCompletion = asyncHandler(async (req, res) => {
   if (!task) { res.status(404); throw new Error('Task not found'); }
   if (task.requester.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
     res.status(403); throw new Error('Not authorized to confirm completion');
+  }
+  if (task.status !== 'COMPLETED') {
+    res.status(400); throw new Error(`Cannot confirm task with status: ${task.status}`);
   }
 
   task.status = 'CONFIRMED';

@@ -20,6 +20,7 @@ export default function AdminDashboard() {
   const [reportsList, setReportsList] = useState([]);
   const [organizationsList, setOrganizationsList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [verifyingOrganizationId, setVerifyingOrganizationId] = useState(null);
   const [activeTab, setActiveTab] = useState('overview'); // overview, users, reports, organizations
 
   useEffect(() => {
@@ -67,12 +68,18 @@ export default function AdminDashboard() {
   };
 
   const handleVerifyOrganization = async (orgId, approve) => {
+    setVerifyingOrganizationId(orgId);
     try {
       const res = await api.put(`/admin/organizations/${orgId}/verify`, { approve });
-      toast.success(res.data.organization?.verificationStatus || 'Organization updated');
-      fetchAdminData();
+      const updatedOrganization = res.data.organization;
+      setOrganizationsList((organizations) => organizations.map((organization) => (
+        organization._id === orgId ? { ...organization, ...updatedOrganization } : organization
+      )));
+      toast.success(approve ? 'Organization approved' : 'Organization rejected');
     } catch (err) {
-      toast.error('Failed to update organization verification');
+      toast.error(err.response?.data?.message || 'Failed to update organization verification');
+    } finally {
+      setVerifyingOrganizationId(null);
     }
   };
 
@@ -261,15 +268,17 @@ export default function AdminDashboard() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleVerifyOrganization(org._id, false)}
-                        className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-bold"
+                        disabled={verifyingOrganizationId === org._id}
+                        className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Reject
+                        {verifyingOrganizationId === org._id ? 'Updating...' : 'Reject'}
                       </button>
                       <button
                         onClick={() => handleVerifyOrganization(org._id, true)}
-                        className="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold"
+                        disabled={verifyingOrganizationId === org._id}
+                        className="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        Approve
+                        {verifyingOrganizationId === org._id ? 'Updating...' : 'Approve'}
                       </button>
                     </div>
                   ) : (

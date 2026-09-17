@@ -4,6 +4,7 @@ const { getLeaderboard, getUserBadges, getTrustScore } = require('../controllers
 const { protect } = require('../middleware/auth');
 
 router.get('/leaderboard', getLeaderboard);
+router.get('/', getLeaderboard);
 router.get('/badges', protect, getUserBadges);
 router.get('/reputation/:userId', getTrustScore);
 

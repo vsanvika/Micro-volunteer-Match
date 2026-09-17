@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { Clock, Lock, Mail, ArrowRight, Sparkles } from 'lucide-react';
+import { Clock, Lock, Mail, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
@@ -30,11 +30,6 @@ export default function LoginPage() {
     }
   };
 
-  const fillDemoAccount = (demoEmail, demoPassword) => {
-    setEmail(demoEmail);
-    setPassword(demoPassword);
-  };
-
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between">
       <Navbar />
@@ -48,36 +43,6 @@ export default function LoginPage() {
             </div>
             <h2 className="text-2xl font-extrabold text-white">Welcome Back</h2>
             <p className="text-xs text-slate-400">Log in to find micro-tasks or manage requests</p>
-          </div>
-
-          {/* Quick Demo Credentials Assistant */}
-          <div className="bg-slate-900/80 p-3 rounded-2xl border border-emerald-500/20 text-xs space-y-1.5">
-            <div className="font-bold text-emerald-400 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5" /> Demo Quick Login:
-            </div>
-            <div className="grid grid-cols-3 gap-1.5 pt-1">
-              <button
-                type="button"
-                onClick={() => fillDemoAccount('alex.volunteer@student.edu', 'password123')}
-                className="py-1 px-2 rounded-lg bg-slate-800 hover:bg-emerald-500/20 text-[10px] text-slate-300 font-bold border border-slate-700 text-center"
-              >
-                Volunteer
-              </button>
-              <button
-                type="button"
-                onClick={() => fillDemoAccount('sarah.requester@campus.edu', 'password123')}
-                className="py-1 px-2 rounded-lg bg-slate-800 hover:bg-emerald-500/20 text-[10px] text-slate-300 font-bold border border-slate-700 text-center"
-              >
-                Requester
-              </button>
-              <button
-                type="button"
-                onClick={() => fillDemoAccount('admin@microvolunteer.org', 'password123')}
-                className="py-1 px-2 rounded-lg bg-slate-800 hover:bg-purple-500/20 text-[10px] text-slate-300 font-bold border border-slate-700 text-center"
-              >
-                Admin
-              </button>
-            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

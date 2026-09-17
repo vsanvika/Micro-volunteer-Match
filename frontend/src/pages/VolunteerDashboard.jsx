@@ -62,7 +62,7 @@ export default function VolunteerDashboard() {
               </span>
               <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center gap-1">
                 <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                {user?.streak?.current || 7} Day Streak
+                {user?.streak?.current || 0} Day Streak
               </span>
             </div>
             <p className="text-xs sm:text-sm text-slate-400">
@@ -73,15 +73,15 @@ export default function VolunteerDashboard() {
           {/* User Gamification Stats Bar */}
           <div className="flex items-center gap-3 overflow-x-auto pb-1">
             <div className="glass-panel p-3 px-4 rounded-2xl border border-slate-800 text-center min-w-[100px]">
-              <div className="text-lg font-extrabold text-amber-400">{user?.points || 860}</div>
+              <div className="text-lg font-extrabold text-amber-400">{user?.points || 0}</div>
               <div className="text-[10px] text-slate-400 uppercase font-bold">Points</div>
             </div>
             <div className="glass-panel p-3 px-4 rounded-2xl border border-slate-800 text-center min-w-[100px]">
-              <div className="text-lg font-extrabold text-emerald-400">{user?.volunteerMinutes || 420}</div>
+              <div className="text-lg font-extrabold text-emerald-400">{user?.volunteerMinutes || 0}</div>
               <div className="text-[10px] text-slate-400 uppercase font-bold">Mins Logged</div>
             </div>
             <div className="glass-panel p-3 px-4 rounded-2xl border border-slate-800 text-center min-w-[100px]">
-              <div className="text-lg font-extrabold text-sky-400">{user?.tasksCompleted || 18}</div>
+              <div className="text-lg font-extrabold text-sky-400">{user?.tasksCompleted || 0}</div>
               <div className="text-[10px] text-slate-400 uppercase font-bold">Completed</div>
             </div>
           </div>
@@ -166,15 +166,15 @@ export default function VolunteerDashboard() {
                 <Trophy className="w-4 h-4" /> Next Milestone
               </div>
               <h3 className="text-base font-bold text-white mb-2">Super Volunteer Badge</h3>
-              <p className="text-xs text-slate-400 mb-4">Complete 2 more micro-tasks to unlock the 💎 Super Volunteer badge!</p>
+              <p className="text-xs text-slate-400 mb-4">Complete {Math.max(0, 10 - (user?.tasksCompleted || 0))} more micro-tasks to unlock the Super Volunteer badge!</p>
               
               {/* Progress Bar */}
               <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800 mb-2">
-                <div className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full w-[80%]" />
+                <div className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full" style={{ width: `${Math.min(100, ((user?.tasksCompleted || 0) / 10) * 100)}%` }} />
               </div>
               <div className="flex justify-between text-[11px] text-slate-500 font-bold">
-                <span>8 / 10 Tasks</span>
-                <span>80%</span>
+                <span>{Math.min(user?.tasksCompleted || 0, 10)} / 10 Tasks</span>
+                <span>{Math.min(100, Math.round(((user?.tasksCompleted || 0) / 10) * 100))}%</span>
               </div>
             </div>
 

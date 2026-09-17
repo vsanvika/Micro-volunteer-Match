@@ -96,26 +96,26 @@ const seedDB = async () => {
     // 4. Users
     const usersData = [
       {
-        name: 'Admin User', email: 'admin@microvolunteer.org', password: 'password123', role: 'admin',
+        name: 'Admin User', email: 'admin@microvolunteer.org', password: '12345678', role: 'admin',
         avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Admin',
         bio: 'Platform Administrator maintaining campus impact & safety.',
       },
       {
-        name: 'Sarah Chen', email: 'sarah.requester@campus.edu', password: 'password123', role: 'requester',
+        name: 'Sarah Chen', email: 'sarah.requester@campus.edu', password: '12345678', role: 'requester',
         organizationName: 'Campus Coding Club',
         avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Sarah',
         bio: 'Lead organizer at Campus Coding Club connecting tech learners.',
         location: { city: 'Hyderabad', country: 'India' },
       },
       {
-        name: 'David Miller', email: 'david.ngo@community.org', password: 'password123', role: 'requester',
+        name: 'David Miller', email: 'david.ngo@community.org', password: '12345678', role: 'requester',
         organizationName: 'Metro Literacy NGO',
         avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=David',
         bio: 'Program Director at Metro Literacy Foundation.',
         location: { city: 'Bangalore', country: 'India' },
       },
       {
-        name: 'Green Campus Initiative', email: 'green@campus.edu', password: 'password123', role: 'requester',
+        name: 'Green Campus Initiative', email: 'green@campus.edu', password: '12345678', role: 'requester',
         organizationName: 'Sustainability Society',
         avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Green',
         bio: 'Promoting zero-waste and environmental awareness on campus.',
@@ -123,7 +123,7 @@ const seedDB = async () => {
       },
       // Volunteers
       {
-        name: 'Alex Johnson', email: 'alex.volunteer@student.edu', password: 'password123', role: 'volunteer',
+        name: 'Alex Johnson', email: 'alex.volunteer@student.edu', password: '12345678', role: 'volunteer',
         avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Alex',
         bio: 'Computer Science senior passionate about React, UI design, and tutoring.',
         skills: [{ name: 'React', proficiency: 'Expert' }, { name: 'JavaScript', proficiency: 'Expert' }, { name: 'UI/UX Design', proficiency: 'Intermediate' }, { name: 'Python', proficiency: 'Intermediate' }],
@@ -140,7 +140,7 @@ const seedDB = async () => {
         monthlyGoal: { targetTasks: 10, targetMinutes: 150, month: 'September 2026', weekPlan: [{ week: 1, targetTasks: 2 }, { week: 2, targetTasks: 3 }, { week: 3, targetTasks: 2 }, { week: 4, targetTasks: 3 }], currentProgress: 3 },
       },
       {
-        name: 'Rahul Sharma', email: 'rahul.v@student.edu', password: 'password123', role: 'volunteer',
+        name: 'Rahul Sharma', email: 'rahul.v@student.edu', password: '12345678', role: 'volunteer',
         avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Rahul',
         bio: 'Software engineer student who loves helping juniors debug Java & Python.',
         skills: [{ name: 'Java', proficiency: 'Expert' }, { name: 'Python', proficiency: 'Expert' }, { name: 'Teaching', proficiency: 'Intermediate' }],
@@ -156,7 +156,7 @@ const seedDB = async () => {
         location: { city: 'Bangalore', country: 'India' },
       },
       {
-        name: 'Priya Patel', email: 'priya.p@student.edu', password: 'password123', role: 'volunteer',
+        name: 'Priya Patel', email: 'priya.p@student.edu', password: '12345678', role: 'volunteer',
         avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Priya',
         bio: 'Graphic Design major passionate about social media posters & branding.',
         skills: [{ name: 'Graphic Design', proficiency: 'Expert' }, { name: 'UI/UX Design', proficiency: 'Intermediate' }, { name: 'Social Media', proficiency: 'Expert' }],
@@ -172,7 +172,7 @@ const seedDB = async () => {
         location: { city: 'Mumbai', country: 'India' },
       },
       {
-        name: 'Elena Rostova', email: 'elena.r@student.edu', password: 'password123', role: 'volunteer',
+        name: 'Elena Rostova', email: 'elena.r@student.edu', password: '12345678', role: 'volunteer',
         avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Elena',
         bio: 'Multilingual linguistics student for quick translation & proofreading.',
         skills: [{ name: 'Translation', proficiency: 'Expert' }, { name: 'Teaching', proficiency: 'Intermediate' }, { name: 'Writing', proficiency: 'Intermediate' }],
@@ -188,7 +188,7 @@ const seedDB = async () => {
         location: { city: 'Delhi', country: 'India' },
       },
       {
-        name: 'Marcus Vance', email: 'marcus.v@student.edu', password: 'password123', role: 'volunteer',
+        name: 'Marcus Vance', email: 'marcus.v@student.edu', password: '12345678', role: 'volunteer',
         avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=Marcus',
         bio: 'Community organizer helping with logistics, book sorting, and drives.',
         skills: [{ name: 'Public Speaking', proficiency: 'Intermediate' }, { name: 'Social Media', proficiency: 'Intermediate' }],
@@ -357,10 +357,15 @@ const seedDB = async () => {
 
     console.log('\n[Seed]: ✅ Database seeding complete!\n');
     console.log('Demo Accounts:');
-    console.log('  Admin:     admin@microvolunteer.org / password123');
-    console.log('  Requester: sarah.requester@campus.edu / password123');
-    console.log('  Volunteer: alex.volunteer@student.edu / password123');
-    console.log('  Volunteer: rahul.v@student.edu / password123');
+    console.log('  Admin:     admin@microvolunteer.org / 12345678');
+    console.log('  Requester: sarah.requester@campus.edu / 12345678');
+    console.log('  Requester: david.ngo@community.org / 12345678');
+    console.log('  Requester: green@campus.edu / 12345678');
+    console.log('  Volunteer: alex.volunteer@student.edu / 12345678');
+    console.log('  Volunteer: rahul.v@student.edu / 12345678');
+    console.log('  Volunteer: priya.p@student.edu / 12345678');
+    console.log('  Volunteer: elena.r@student.edu / 12345678');
+    console.log('  Volunteer: marcus.v@student.edu / 12345678');
     console.log('\nPortfolio URLs:');
     console.log('  /portfolio/alex-johnson');
     console.log('  /portfolio/rahul-sharma');

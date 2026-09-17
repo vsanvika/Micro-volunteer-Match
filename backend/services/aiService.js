@@ -121,6 +121,27 @@ Return JSON: {"title": "...", "category": "Education|Technology|Design|Translati
   return { title: prompt.length > 50 ? `${prompt.substring(0, 47)}...` : prompt, category, requiredSkills: skills, estimatedDuration: duration, difficulty, description: `Volunteers will assist with ${prompt}. Clear guidance provided by requester.` };
 };
 
+const generateTaskBreakdown = async ({ title, description, duration }) => {
+  const geminiResult = await callGemini(`Break this micro-volunteer task into practical steps that fit within ${duration} minutes.
+Task: "${title}"
+Description: "${description}"
+Return JSON: {"steps":[{"title":"...","minutes":5,"outcome":"..."}],"totalMinutes":${duration},"successSignal":"..."}`);
+
+  if (geminiResult?.steps?.length) return geminiResult;
+
+  const safeDuration = Math.max(5, Number(duration) || 15);
+  const stepCount = safeDuration <= 10 ? 2 : safeDuration <= 30 ? 3 : 4;
+  const baseMinutes = Math.max(5, Math.floor(safeDuration / stepCount / 5) * 5);
+  const steps = [
+    { title: 'Clarify the goal', minutes: baseMinutes, outcome: 'Agree on the exact result needed.' },
+    { title: 'Do the focused work', minutes: baseMinutes, outcome: 'Complete the main contribution.' },
+    { title: 'Review and refine', minutes: baseMinutes, outcome: 'Check quality and resolve open issues.' },
+    { title: 'Share the result', minutes: Math.max(5, safeDuration - baseMinutes * 3), outcome: 'Send the finished result and next step.' },
+  ].slice(0, stepCount);
+  const totalMinutes = steps.reduce((sum, step) => sum + step.minutes, 0);
+  return { steps, totalMinutes, successSignal: 'The requester confirms the agreed result is ready to use.' };
+};
+
 // ---------- 3. NEW: Skill Extractor ----------
 const extractSkillsFromText = async (text) => {
   const geminiResult = await callGemini(`Analyze this resume/profile text and extract skills and interests. Return ONLY valid JSON:
@@ -207,6 +228,7 @@ Return JSON: {"summary": "..."}`);
 module.exports = {
   getAiTaskRecommendations,
   generateSmartTaskSuggestions,
+  generateTaskBreakdown,
   extractSkillsFromText,
   generateResumeDescription,
   generateGoalPlan,

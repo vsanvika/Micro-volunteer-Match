@@ -4,6 +4,7 @@ import { PlusCircle, Wand2, Sparkles, Clock, MapPin, Tag, CheckCircle2 } from 'l
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import SmartTaskCreatorModal from '../components/ai/SmartTaskCreatorModal';
+import TaskBreakdownPanel from '../components/ai/TaskBreakdownPanel';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -53,7 +54,7 @@ export default function CreateTaskPage() {
         estimatedDuration: Number(estimatedDuration),
         difficulty,
         locationMode,
-        locationAddress: locationMode === 'in-person' ? locationAddress : '',
+        locationAddress: locationMode === 'offline' ? locationAddress : '',
         priority,
       });
 
@@ -127,7 +128,7 @@ export default function CreateTaskPage() {
               <select
                 value={estimatedDuration}
                 onChange={(e) => setEstimatedDuration(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500 font-bold text-emerald-400"
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-emerald-500 font-bold text-emerald-400"
               >
                 {durations.map((d) => (
                   <option key={d} value={d}>{d} Minutes</option>
@@ -135,6 +136,8 @@ export default function CreateTaskPage() {
               </select>
             </div>
           </div>
+
+          <TaskBreakdownPanel title={title} description={description} duration={estimatedDuration} />
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1.5">Required Skills (Comma separated)</label>
@@ -181,7 +184,7 @@ export default function CreateTaskPage() {
                 className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500"
               >
                 <option value="online">Online</option>
-                <option value="in-person">In-Person</option>
+                <option value="offline">Offline / In-Person</option>
               </select>
             </div>
 
@@ -199,15 +202,16 @@ export default function CreateTaskPage() {
             </div>
           </div>
 
-          {locationMode === 'in-person' && (
+          {locationMode === 'offline' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Campus Location / Address</label>
+              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Offline Location / Address</label>
               <input
                 type="text"
                 value={locationAddress}
                 onChange={(e) => setLocationAddress(e.target.value)}
                 placeholder="e.g. Student Union Room 204"
                 className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                required
               />
             </div>
           )}

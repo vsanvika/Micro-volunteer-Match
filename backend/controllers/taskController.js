@@ -5,7 +5,7 @@ const Notification = require('../models/Notification');
 const User = require('../models/User');
 const Category = require('../models/Category');
 const { calculateMatchScore } = require('../services/matchingEngine');
-const { sendNotificationToUser } = require('../services/socketService');
+const { sendNotificationToUser, sendWorkspaceUpdateToRoom } = require('../services/socketService');
 
 // @desc    Get all tasks with filtering, search, time picker & calculated match score
 // @route   GET /api/tasks
@@ -118,6 +118,11 @@ const getTaskById = asyncHandler(async (req, res) => {
 // @access  Private (Requester / Admin)
 const createTask = asyncHandler(async (req, res) => {
   const { title, description, category, requiredSkills, estimatedDuration, difficulty, locationMode, locationAddress, deadline, priority, requiredVolunteers } = req.body;
+  const normalizedLocationMode = locationMode === 'in-person' ? 'offline' : (locationMode || 'online');
+  if (normalizedLocationMode === 'offline' && !locationAddress?.trim()) {
+    res.status(400);
+    throw new Error('Please provide a location for offline tasks');
+  }
 
   const task = await Task.create({
     title,
@@ -126,8 +131,8 @@ const createTask = asyncHandler(async (req, res) => {
     requiredSkills: Array.isArray(requiredSkills) ? requiredSkills : (requiredSkills || '').split(',').map(s => s.trim()).filter(Boolean),
     estimatedDuration: Number(estimatedDuration) || 15,
     difficulty: difficulty || 'Beginner',
-    locationMode: locationMode || 'online',
-    locationAddress: locationAddress || '',
+    locationMode: normalizedLocationMode,
+    locationAddress: locationAddress?.trim() || '',
     deadline: deadline || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     priority: priority || 'Medium',
     requiredVolunteers: Number(requiredVolunteers) || 1,
@@ -224,6 +229,34 @@ const getCategories = asyncHandler(async (req, res) => {
   res.json({ success: true, categories });
 });
 
+const canAccessWorkspace = (task, user) => task.requester.toString() === user._id.toString()
+  || task.assignedVolunteers.some((volunteer) => volunteer.toString() === user._id.toString())
+  || user.role === 'admin';
+
+const getTaskWorkspace = asyncHandler(async (req, res) => {
+  const task = await Task.findById(req.params.id).select('requester assignedVolunteers collaboration');
+  if (!task) { res.status(404); throw new Error('Task not found'); }
+  if (!canAccessWorkspace(task, req.user)) { res.status(403); throw new Error('Not authorized to access this workspace'); }
+  res.json({ success: true, workspace: task.collaboration || { notes: '', checklist: [] } });
+});
+
+const updateTaskWorkspace = asyncHandler(async (req, res) => {
+  const task = await Task.findById(req.params.id);
+  if (!task) { res.status(404); throw new Error('Task not found'); }
+  if (!canAccessWorkspace(task, req.user)) { res.status(403); throw new Error('Not authorized to update this workspace'); }
+  const notes = typeof req.body.notes === 'string' ? req.body.notes.slice(0, 10000) : task.collaboration?.notes || '';
+  const checklist = Array.isArray(req.body.checklist) ? req.body.checklist.slice(0, 50).map((item) => ({
+    text: String(item.text || '').trim().slice(0, 160),
+    completed: Boolean(item.completed),
+    updatedBy: req.user._id,
+    updatedAt: new Date(),
+  })).filter((item) => item.text) : task.collaboration?.checklist || [];
+  task.collaboration = { notes, checklist };
+  await task.save();
+  sendWorkspaceUpdateToRoom(task._id, task.collaboration);
+  res.json({ success: true, workspace: task.collaboration });
+});
+
 module.exports = {
   getTasks,
   getTaskById,
@@ -232,4 +265,6 @@ module.exports = {
   deleteTask,
   getMyCreatedTasks,
   getCategories,
+  getTaskWorkspace,
+  updateTaskWorkspace,
 };

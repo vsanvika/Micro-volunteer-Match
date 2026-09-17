@@ -6,8 +6,8 @@ import {
   Sparkles, 
   Clock, 
   Trophy, 
-  BarChart3, 
   Bell, 
+  MessageSquare,
   User, 
   LogOut, 
   PlusCircle, 
@@ -23,12 +23,14 @@ import {
   Globe
 } from 'lucide-react';
 import AiAssistantModal from '../ai/AiAssistantModal';
+import api from '../../services/api';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuthStore();
   const { notifications, unreadCount, fetchNotifications, markAllAsRead } = useNotificationStore();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showAiModal, setShowAiModal] = useState(false);
+  const [conversations, setConversations] = useState([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -39,6 +41,26 @@ export default function Navbar() {
     }
   }, [isAuthenticated, fetchNotifications]);
 
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setConversations([]);
+      return;
+    }
+
+    const fetchInbox = async () => {
+      try {
+        const res = await api.get('/messages/inbox');
+        setConversations(res.data.conversations || []);
+      } catch (err) {
+        console.error('Failed to load chat inbox:', err);
+      }
+    };
+
+    fetchInbox();
+  }, [isAuthenticated]);
+
+  const unreadChats = conversations.filter((conversation) => conversation.unread).length;
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -47,28 +69,28 @@ export default function Navbar() {
   return (
     <>
       <header className="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 flex items-center gap-3">
           
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+          <Link to="/" className="flex min-w-0 flex-1 items-center space-x-2 sm:space-x-3 group">
+            <div className="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
               <Clock className="w-6 h-6 text-slate-950 font-bold" />
             </div>
-            <div>
-              <span className="text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5">
-                Micro-Volunteer <span className="gradient-text">Match</span>
+            <div className="min-w-0">
+              <span className="text-base sm:text-xl font-extrabold tracking-tight text-white flex items-center gap-1.5 truncate">
+                <span className="truncate">Micro-Volunteer</span> <span className="gradient-text shrink-0">Match</span>
               </span>
-              <span className="block text-[10px] uppercase tracking-widest text-emerald-400 font-semibold -mt-1">
+              <span className="hidden sm:block text-[10px] uppercase tracking-widest text-emerald-400 font-semibold -mt-1 truncate">
                 Turn 15 Mins Into Impact
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1 lg:space-x-2">
+          <nav className="hidden xl:flex min-w-0 shrink items-center space-x-0.5">
             <Link 
               to="/tasks" 
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
                 location.pathname === '/tasks' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
               }`}
             >
@@ -76,9 +98,20 @@ export default function Navbar() {
               Explore Tasks
             </Link>
 
+            {isAuthenticated && (
+              <Link
+                to="/messages"
+                className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${location.pathname === '/messages' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}
+              >
+                <MessageSquare className="w-4 h-4" />
+                Chats
+                {unreadChats > 0 && <span className="min-w-4 h-4 px-1 rounded-full bg-emerald-500 text-[10px] font-bold text-slate-950 flex items-center justify-center">{unreadChats > 9 ? '9+' : unreadChats}</span>}
+              </Link>
+            )}
+
             <Link 
               to="/quick-tasks" 
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
                 location.pathname === '/quick-tasks' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
               }`}
             >
@@ -88,7 +121,7 @@ export default function Navbar() {
 
             <Link 
               to="/learning" 
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
                 location.pathname === '/learning' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
               }`}
             >
@@ -97,18 +130,8 @@ export default function Navbar() {
             </Link>
 
             <Link 
-              to="/impact" 
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                location.pathname === '/impact' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-              }`}
-            >
-              <BarChart3 className="w-4 h-4" />
-              Impact
-            </Link>
-
-            <Link 
               to="/achievements" 
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
                 location.pathname === '/achievements' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
               }`}
             >
@@ -119,7 +142,7 @@ export default function Navbar() {
             {/* AI Assistant Button */}
             <button
               onClick={() => setShowAiModal(true)}
-              className="px-3 py-2 rounded-lg text-sm font-medium text-emerald-300 bg-gradient-to-r from-emerald-950/60 to-teal-950/60 border border-emerald-500/30 hover:border-emerald-400 transition-all flex items-center gap-1.5 shadow-sm hover:shadow-emerald-500/10"
+              className="px-2 py-2 rounded-lg text-xs font-medium text-emerald-300 bg-gradient-to-r from-emerald-950/60 to-teal-950/60 border border-emerald-500/30 hover:border-emerald-400 transition-all flex items-center gap-1 shadow-sm hover:shadow-emerald-500/10"
             >
               <Bot className="w-4 h-4 text-emerald-400 animate-pulse" />
               <span>AI Assistant</span>
@@ -127,14 +150,14 @@ export default function Navbar() {
           </nav>
 
           {/* Right Action Icons */}
-          <div className="flex items-center space-x-3">
+          <div className="flex shrink-0 items-center space-x-1 sm:space-x-2 lg:space-x-3">
             {isAuthenticated ? (
               <>
                 {/* Role Specific Quick Action */}
                 {user.role === 'requester' ? (
                   <Link
                     to="/create-task"
-                    className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-sm font-bold shadow-md shadow-emerald-500/20 transition-all hover:scale-105"
+                    className="hidden xl:flex items-center gap-1 px-3 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold shadow-md shadow-emerald-500/20 transition-all hover:scale-105"
                   >
                     <PlusCircle className="w-4 h-4" />
                     Post Task
@@ -142,7 +165,7 @@ export default function Navbar() {
                 ) : user.role === 'admin' ? (
                   <Link
                     to="/admin"
-                    className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-sm font-bold shadow-md shadow-purple-600/20 transition-all"
+                    className="hidden xl:flex items-center gap-1 px-3 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-600/20 transition-all"
                   >
                     <Shield className="w-4 h-4" />
                     Admin Panel
@@ -216,7 +239,7 @@ export default function Navbar() {
                     alt={user.name}
                     className="w-8 h-8 rounded-lg bg-slate-800 object-cover"
                   />
-                  <span className="hidden lg:block text-sm font-semibold text-slate-200">
+                  <span className="hidden xl:block text-xs font-semibold text-slate-200">
                     {user.name.split(' ')[0]}
                   </span>
                 </Link>
@@ -250,7 +273,7 @@ export default function Navbar() {
             {/* Mobile menu toggle button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+              className="xl:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -259,34 +282,36 @@ export default function Navbar() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden glass-panel border-t border-slate-800 px-4 py-4 space-y-3">
+          <div className="xl:hidden glass-panel border-t border-slate-800 px-4 py-4 space-y-3">
             <Link
               to="/tasks"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"
+              className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${location.pathname === '/tasks' ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' : 'text-slate-700 hover:text-emerald-700 hover:bg-emerald-50'}`}
             >
               Explore Tasks
             </Link>
             <Link
-              to="/impact"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"
-            >
-              Impact Platform
-            </Link>
-            <Link
               to="/achievements"
               onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"
+              className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${location.pathname === '/achievements' ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' : 'text-slate-700 hover:text-emerald-700 hover:bg-emerald-50'}`}
             >
               Leaderboard & Badges
             </Link>
+            {isAuthenticated && (
+              <Link
+                to="/messages"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium ${location.pathname === '/messages' ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' : 'text-slate-700 hover:text-emerald-700 hover:bg-emerald-50'}`}
+              >
+                <span className="flex items-center gap-2"><MessageSquare className="w-4 h-4" /> Chats{unreadChats > 0 ? ` (${unreadChats > 9 ? '9+' : unreadChats})` : ''}</span>
+              </Link>
+            )}
             <button
               onClick={() => {
                 setMobileMenuOpen(false);
                 setShowAiModal(true);
               }}
-              className="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-emerald-400 bg-emerald-950/40 border border-emerald-500/20"
+              className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors"
             >
               AI Assistant Chat
             </button>

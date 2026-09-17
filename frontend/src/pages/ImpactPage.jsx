@@ -7,7 +7,9 @@ import {
   HeartHandshake, 
   TrendingUp, 
   Award,
-  Building
+  Building,
+  History,
+  ShieldCheck
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -26,10 +28,13 @@ import {
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import api from '../services/api';
+import { useAuthStore } from '../store/useAuthStore';
 
 export default function ImpactPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuthStore();
+  const [timeline, setTimeline] = useState([]);
 
   useEffect(() => {
     const fetchImpact = async () => {
@@ -45,6 +50,13 @@ export default function ImpactPage() {
 
     fetchImpact();
   }, []);
+
+  useEffect(() => {
+    if (!user?._id) return;
+    api.get(`/analytics/volunteer/${user._id}`)
+      .then((res) => setTimeline(res.data.analytics?.recentActivities || []))
+      .catch(() => setTimeline([]));
+  }, [user?._id]);
 
   const COLORS = ['#10b981', '#0ea5e9', '#ec4899', '#8b5cf6', '#f59e0b', '#14b8a6'];
 
@@ -180,6 +192,30 @@ export default function ImpactPage() {
           </div>
 
         </div>
+
+        {user?.role === 'volunteer' && (
+          <section className="glass-panel p-6 rounded-3xl border border-slate-800 space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-bold text-white flex items-center gap-2"><History className="w-4 h-4 text-emerald-400" /> Impact proof timeline</h2>
+                <p className="text-xs text-slate-400 mt-1">Verified contributions you can use as a living service record.</p>
+              </div>
+              <ShieldCheck className="w-5 h-5 text-emerald-400" />
+            </div>
+            {timeline.length === 0 ? (
+              <p className="text-xs text-slate-500">Complete a confirmed task to start your verified timeline.</p>
+            ) : (
+              <div className="space-y-3">
+                {timeline.map((activity) => (
+                  <div key={activity._id} className="flex gap-3 border-l-2 border-emerald-500/40 pl-4 py-1">
+                    <div className="min-w-0 flex-1"><p className="text-sm font-semibold text-white">{activity.action}</p><p className="text-xs text-slate-400 mt-1">{activity.details}</p></div>
+                    <div className="text-right shrink-0"><p className="text-xs font-bold text-emerald-300">+{activity.pointsEarned} pts</p><p className="text-[10px] text-slate-500">{new Date(activity.createdAt).toLocaleDateString()}</p></div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
 
       </main>
 

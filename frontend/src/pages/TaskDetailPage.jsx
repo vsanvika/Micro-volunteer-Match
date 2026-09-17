@@ -27,7 +27,7 @@ import toast from 'react-hot-toast';
 export default function TaskDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, fetchCurrentUser } = useAuthStore();
   
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +41,7 @@ export default function TaskDetailPage() {
   const [stars, setStars] = useState(5);
   const [comment, setComment] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [completionLocation, setCompletionLocation] = useState('');
 
   useEffect(() => {
     fetchTaskDetails();
@@ -81,7 +82,7 @@ export default function TaskDetailPage() {
 
   const handleMarkComplete = async () => {
     try {
-      await api.post(`/applications/tasks/${id}/complete`);
+      await api.post(`/applications/tasks/${id}/complete`, { completionLocation });
       toast.success('Task marked as completed! Waiting for requester confirmation.');
       fetchTaskDetails();
     } catch (err) {
@@ -114,6 +115,7 @@ export default function TaskDetailPage() {
       const res = await api.post(`/applications/tasks/${id}/confirm`, { stars, comment });
       toast.success(`Task confirmed! Awarded +${res.data.pointsEarned || task.estimatedDuration} points.`);
       setShowConfirmModal(false);
+      await fetchCurrentUser();
       fetchTaskDetails();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to confirm task');
@@ -187,8 +189,8 @@ export default function TaskDetailPage() {
             </div>
             <div>
               <span className="text-slate-500 font-bold block mb-1">Location Mode</span>
-              <span className="text-white font-extrabold text-sm flex items-center gap-1">
-                <MapPin className="w-4 h-4 text-sky-400" /> {task.locationMode === 'online' ? 'Online' : task.locationAddress || 'In-Person'}
+                <span className="text-white font-extrabold text-sm flex items-center gap-1">
+                <MapPin className="w-4 h-4 text-sky-400" /> {task.locationMode === 'online' ? 'Online' : task.locationAddress || 'Offline'}
               </span>
             </div>
             <div>
@@ -291,7 +293,18 @@ export default function TaskDetailPage() {
                     </span>
                     {userApp.status === 'ACCEPTED' && task.status !== 'CONFIRMED' && (
                       <button
-                        onClick={handleMarkComplete}
+                        onClick={() => {
+                          if (task.locationMode === 'offline') {
+                            const confirmedLocation = window.prompt(`Confirm offline location: ${task.locationAddress || ''}`, task.locationAddress || '');
+                            if (!confirmedLocation?.trim()) return;
+                            setCompletionLocation(confirmedLocation.trim());
+                            api.post(`/applications/tasks/${id}/complete`, { completionLocation: confirmedLocation.trim() })
+                              .then(() => { toast.success('Offline task marked as completed!'); fetchTaskDetails(); })
+                              .catch((err) => toast.error(err.response?.data?.message || 'Failed to complete task'));
+                            return;
+                          }
+                          handleMarkComplete();
+                        }}
                         className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-extrabold shadow-md shadow-emerald-500/20"
                       >
                         Mark Completed

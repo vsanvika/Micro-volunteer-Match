@@ -28,10 +28,11 @@ const taskSchema = new mongoose.Schema(
     },
     locationMode: {
       type: String,
-      enum: ['online', 'in-person'],
+      enum: ['online', 'offline', 'in-person'],
       default: 'online',
     },
     locationAddress: { type: String, default: '' },
+    completionLocation: { type: String, default: '' },
     locationCoordinates: {
       lat: { type: Number, default: null },
       lng: { type: Number, default: null },
@@ -62,6 +63,16 @@ const taskSchema = new mongoose.Schema(
     views: { type: Number, default: 0 },
     verifiedCompletions: { type: Number, default: 0 },
     tags: [String],
+
+    collaboration: {
+      notes: { type: String, default: '' },
+      checklist: [{
+        text: { type: String, trim: true },
+        completed: { type: Boolean, default: false },
+        updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+        updatedAt: { type: Date, default: Date.now },
+      }],
+    },
 
     // Team Volunteering
     isTeamTask: { type: Boolean, default: false },

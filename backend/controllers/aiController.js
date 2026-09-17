@@ -5,6 +5,7 @@ const Activity = require('../models/Activity');
 const {
   getAiTaskRecommendations,
   generateSmartTaskSuggestions,
+  generateTaskBreakdown,
   extractSkillsFromText,
   generateResumeDescription,
   generateGoalPlan,
@@ -33,6 +34,15 @@ const handleSmartTaskCreator = asyncHandler(async (req, res) => {
   if (!prompt) { res.status(400); throw new Error('Please provide a prompt describing your request'); }
   const suggestions = await generateSmartTaskSuggestions(prompt);
   res.json({ success: true, suggestions });
+});
+
+const handleTaskBreakdown = asyncHandler(async (req, res) => {
+  const { title, description, duration } = req.body;
+  if (!title || !description) {
+    res.status(400); throw new Error('Please provide a task title and description');
+  }
+  const breakdown = await generateTaskBreakdown({ title, description, duration });
+  res.json({ success: true, breakdown });
 });
 
 // @desc    Extract skills from resume/bio text
@@ -108,6 +118,7 @@ const handleGoalPlan = asyncHandler(async (req, res) => {
 module.exports = {
   handleAiAssistant,
   handleSmartTaskCreator,
+  handleTaskBreakdown,
   handleExtractSkills,
   handleResumeBuilder,
   handleGoalPlan,

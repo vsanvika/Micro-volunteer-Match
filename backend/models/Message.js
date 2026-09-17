@@ -19,7 +19,24 @@ const messageSchema = new mongoose.Schema(
     },
     content: {
       type: String,
-      required: true,
+      default: '',
+    },
+    type: {
+      type: String,
+      enum: ['TEXT', 'FILE', 'VOICE', 'VOICE_CALL', 'VIDEO_CALL'],
+      default: 'TEXT',
+    },
+    callStatus: {
+      type: String,
+      enum: ['RINGING', 'ANSWERED', 'MISSED'],
+      default: undefined,
+    },
+    callStartedAt: { type: Date },
+    callEndedAt: { type: Date },
+    attachment: {
+      name: { type: String, default: '' },
+      mimeType: { type: String, default: '' },
+      dataUrl: { type: String, default: '' },
     },
     isRead: {
       type: Boolean,

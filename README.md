@@ -152,9 +152,13 @@ npm run dev
 
 | Role | Email | Password | Details |
 | :--- | :--- | :--- | :--- |
-| **Volunteer (Student)** | `alex.volunteer@student.edu` | `password123` | CS student, 18 tasks completed, 420 mins logged, 860 pts |
-| **Task Requester (Club)** | `sarah.requester@campus.edu` | `password123` | Campus Coding Club organizer |
-| **Admin** | `admin@microvolunteer.org` | `password123` | Admin panel access to manage users & reports |
+| **Volunteer (Student)** | `alex.volunteer@student.edu` | `12345678` | CS student, 18 tasks completed, 420 mins logged, 860 pts |
+| **Volunteer (Student)** | `rahul.v@student.edu` | `12345678` | Java and Python mentor |
+| **Volunteer (Student)** | `priya.p@student.edu` | `12345678` | Graphic design and social media |
+| **Task Requester (Club)** | `sarah.requester@campus.edu` | `12345678` | Campus Coding Club organizer |
+| **Task Requester (NGO)** | `david.ngo@community.org` | `12345678` | Metro Literacy NGO organizer |
+| **Task Requester (Campus)** | `green@campus.edu` | `12345678` | Sustainability Society organizer |
+| **Admin** | `admin@microvolunteer.org` | `12345678` | Admin panel access to manage users & reports |
 
 ---
 
@@ -166,7 +170,7 @@ npm run dev
 4. **Log in as Volunteer (`alex.volunteer@student.edu`)**:
    - View personalized dashboard with streak (🔥 7-Day Streak) and recommended tasks (*96% Match*).
    - Click a task -> View **Match Breakdown** (*"Why this is a great match..."*) -> Click **Apply**.
-5. **Log in as Requester (`sarah.requester@campus.edu`)**:
+5. **Log in as Requester (`sarah.requester@campus.edu`, password `12345678`)**:
    - Go to Requester Dashboard -> Click **Applicants** -> View volunteer match score -> Click **Accept Volunteer**.
    - Open **Task Chat** drawer -> Send real-time Socket message.
 6. **Task Completion & Points**:
@@ -174,7 +178,7 @@ npm run dev
    - Volunteer receives **+15 points**, volunteer minutes updated, and **Badge Unlocked** notification pops up!
 7. **Impact Dashboard & Admin Control**:
    - View Recharts visualizations for total volunteer minutes and skill distributions.
-   - Log in as `admin@microvolunteer.org` -> view user management and safety reports.
+   - Log in as `admin@microvolunteer.org` with password `12345678` -> view user management, organization verification, and safety reports.
 
 ---
 

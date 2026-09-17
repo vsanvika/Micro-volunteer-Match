@@ -24,6 +24,7 @@ import PortfolioPage from './pages/PortfolioPage';
 import CertificatesPage from './pages/CertificatesPage';
 import VerifyCertificatePage from './pages/VerifyCertificatePage';
 import OrganizationPage from './pages/OrganizationPage';
+import MessagesPage from './pages/MessagesPage';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -53,9 +54,9 @@ export default function App() {
         position="top-right"
         toastOptions={{
           style: {
-            background: '#0f172a',
-            color: '#f8fafc',
-            border: '1px solid #334155',
+            background: '#ffffff',
+            color: '#1e293b',
+            border: '1px solid #e2e8f0',
             fontSize: '12px',
             borderRadius: '12px',
           },
@@ -75,6 +76,14 @@ export default function App() {
         <Route path="/portfolio/:username" element={<PortfolioPage />} />
         <Route path="/certificates" element={<CertificatesPage />} />
         <Route path="/certificates/:verificationId/verify" element={<VerifyCertificatePage />} />
+        <Route
+          path="/messages"
+          element={
+            <ProtectedRoute>
+              <MessagesPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Volunteer Routes */}
         <Route
