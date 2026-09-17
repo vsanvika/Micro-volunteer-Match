@@ -16,10 +16,14 @@ const server = http.createServer(app);
 connectDB();
 
 // Middleware
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000')
+const configuredOrigins = (process.env.CLIENT_URL || 'http://localhost:3000')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
+const allowedOrigins = [...new Set([
+  ...configuredOrigins,
+  'https://micro-volunteer-match-csy0njpdr-vsanvikas-projects.vercel.app',
+])];
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
