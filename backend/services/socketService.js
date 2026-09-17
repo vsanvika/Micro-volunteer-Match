@@ -3,10 +3,11 @@ const socketIO = require('socket.io');
 let io;
 const userSocketMap = new Map(); // userId -> socketId
 
-const initSocket = (server) => {
+const initSocket = (server, allowedOrigins = ['http://localhost:3000']) => {
   io = socketIO(server, {
     cors: {
-      origin: '*',
+      origin: allowedOrigins,
+      credentials: true,
       methods: ['GET', 'POST'],
     },
   });

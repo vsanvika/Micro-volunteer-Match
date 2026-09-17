@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 const { initSocket } = require('./services/socketService');
@@ -15,12 +16,22 @@ const server = http.createServer(app);
 connectDB();
 
 // Middleware
-app.use(cors({ origin: true, credentials: true }));
+const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Origin is not allowed by CORS'));
+  },
+  credentials: true,
+}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Init Socket.IO
-initSocket(server);
+initSocket(server, allowedOrigins);
 
 // Core Routes (existing)
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -57,6 +68,15 @@ app.get('/api/health', (req, res) => {
     time: new Date().toISOString(),
   });
 });
+
+const frontendDist = path.join(__dirname, 'public');
+if (require('fs').existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+}
 
 // Central Error Handler
 app.use(errorHandler);

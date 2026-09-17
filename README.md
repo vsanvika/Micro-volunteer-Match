@@ -146,6 +146,32 @@ npm run dev
 # Application running at http://localhost:3000
 ```
 
+## Production Deployment
+
+### Option A: Deploy frontend and backend separately
+
+1. Deploy the backend from `backend` with `npm install --omit=dev` and `npm start`.
+2. Set backend environment variables:
+   - `NODE_ENV=production`
+   - `PORT` to the platform-provided port
+   - `MONGODB_URI` to a production MongoDB connection string
+   - `JWT_SECRET` to a long random secret
+   - `CLIENT_URL` to the deployed frontend URL
+   - `GEMINI_API_KEY` if AI features are enabled
+3. Copy `frontend/.env.example` to `frontend/.env.production` and set:
+   - `VITE_API_URL=https://your-api.example.com/api`
+   - `VITE_SOCKET_URL=https://your-api.example.com`
+4. Build the frontend with `npm run build` and deploy `frontend/dist` as a static site.
+
+### Option B: Deploy as one service
+
+1. Build the frontend with `npm run build`.
+2. Copy the contents of `frontend/dist` into `backend/public`.
+3. Configure the backend environment and run `npm start` from `backend`.
+4. The backend serves the frontend and API from the same origin.
+
+The API health check is available at `/api/health`. Never commit `.env` files or production credentials. Rotate any database password that has been exposed outside your secret manager before deploying.
+
 ---
 
 ## 🔑 Demo Accounts for Presentation
