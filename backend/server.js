@@ -22,15 +22,25 @@ const configuredOrigins = (process.env.CLIENT_URL || 'http://localhost:3000')
   .filter(Boolean);
 const allowedOrigins = [...new Set([
   ...configuredOrigins,
+  'https://micro-volunteer-match-one.vercel.app',
   'https://micro-volunteer-match-csy0njpdr-vsanvikas-projects.vercel.app',
 ])];
-app.use(cors({
+
+const corsOptions = {
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
     return callback(new Error('Origin is not allowed by CORS'));
   },
   credentials: true,
-}));
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+};
+
+// Handle OPTIONS preflight requests explicitly BEFORE any routes
+app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
