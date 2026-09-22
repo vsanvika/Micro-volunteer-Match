@@ -88,65 +88,67 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <nav className="hidden xl:flex min-w-0 shrink items-center space-x-0.5">
-            <Link 
-              to="/tasks" 
-              className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
-                location.pathname === '/tasks' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-              }`}
-            >
-              <Search className="w-4 h-4" />
-              Explore Tasks
-            </Link>
-
             {isAuthenticated && (
-              <Link
-                to="/messages"
-                className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${location.pathname === '/messages' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}
-              >
-                <MessageSquare className="w-4 h-4" />
-                Chats
-                {unreadChats > 0 && <span className="min-w-4 h-4 px-1 rounded-full bg-emerald-500 text-[10px] font-bold text-slate-950 flex items-center justify-center">{unreadChats > 9 ? '9+' : unreadChats}</span>}
-              </Link>
+              <>
+                <Link 
+                  to="/tasks" 
+                  className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
+                    location.pathname === '/tasks' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                  }`}
+                >
+                  <Search className="w-4 h-4" />
+                  Explore Tasks
+                </Link>
+
+                <Link
+                  to="/messages"
+                  className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${location.pathname === '/messages' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'}`}
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  Chats
+                  {unreadChats > 0 && <span className="min-w-4 h-4 px-1 rounded-full bg-emerald-500 text-[10px] font-bold text-slate-950 flex items-center justify-center">{unreadChats > 9 ? '9+' : unreadChats}</span>}
+                </Link>
+
+                <Link 
+                  to="/quick-tasks" 
+                  className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
+                    location.pathname === '/quick-tasks' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                  }`}
+                >
+                  <Clock className="w-4 h-4" />
+                  I Have 15 Minutes
+                </Link>
+
+                <Link 
+                  to="/learning" 
+                  className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
+                    location.pathname === '/learning' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                  }`}
+                >
+                  <GraduationCap className="w-4 h-4" />
+                  Learn
+                </Link>
+
+                <Link 
+                  to="/achievements" 
+                  className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
+                    location.pathname === '/achievements' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
+                  }`}
+                >
+                  <Trophy className="w-4 h-4 text-amber-400" />
+                  Leaderboard
+                </Link>
+
+                {/* AI Assistant Button */}
+                <button
+                  onClick={() => setShowAiModal(true)}
+                  className="px-2 py-2 rounded-lg text-xs font-medium text-emerald-300 bg-gradient-to-r from-emerald-950/60 to-teal-950/60 border border-emerald-500/30 hover:border-emerald-400 transition-all flex items-center gap-1 shadow-sm hover:shadow-emerald-500/10"
+                >
+                  <Bot className="w-4 h-4 text-emerald-400 animate-pulse" />
+                  <span>AI Assistant</span>
+                </button>
+              </>
             )}
-
-            <Link 
-              to="/quick-tasks" 
-              className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
-                location.pathname === '/quick-tasks' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-              }`}
-            >
-              <Clock className="w-4 h-4" />
-              I Have 15 Minutes
-            </Link>
-
-            <Link 
-              to="/learning" 
-              className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
-                location.pathname === '/learning' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-              }`}
-            >
-              <GraduationCap className="w-4 h-4" />
-              Learn
-            </Link>
-
-            <Link 
-              to="/achievements" 
-              className={`px-2 py-2 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
-                location.pathname === '/achievements' ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20' : 'text-slate-300 hover:text-white hover:bg-slate-800/50'
-              }`}
-            >
-              <Trophy className="w-4 h-4 text-amber-400" />
-              Leaderboard
-            </Link>
-
-            {/* AI Assistant Button */}
-            <button
-              onClick={() => setShowAiModal(true)}
-              className="px-2 py-2 rounded-lg text-xs font-medium text-emerald-300 bg-gradient-to-r from-emerald-950/60 to-teal-950/60 border border-emerald-500/30 hover:border-emerald-400 transition-all flex items-center gap-1 shadow-sm hover:shadow-emerald-500/10"
-            >
-              <Bot className="w-4 h-4 text-emerald-400 animate-pulse" />
-              <span>AI Assistant</span>
-            </button>
           </nav>
 
           {/* Right Action Icons */}
@@ -283,38 +285,40 @@ export default function Navbar() {
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
           <div className="xl:hidden glass-panel border-t border-slate-800 px-4 py-4 space-y-3">
-            <Link
-              to="/tasks"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${location.pathname === '/tasks' ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' : 'text-slate-700 hover:text-emerald-700 hover:bg-emerald-50'}`}
-            >
-              Explore Tasks
-            </Link>
-            <Link
-              to="/achievements"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${location.pathname === '/achievements' ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' : 'text-slate-700 hover:text-emerald-700 hover:bg-emerald-50'}`}
-            >
-              Leaderboard & Badges
-            </Link>
             {isAuthenticated && (
-              <Link
-                to="/messages"
-                onClick={() => setMobileMenuOpen(false)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium ${location.pathname === '/messages' ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' : 'text-slate-700 hover:text-emerald-700 hover:bg-emerald-50'}`}
-              >
-                <span className="flex items-center gap-2"><MessageSquare className="w-4 h-4" /> Chats{unreadChats > 0 ? ` (${unreadChats > 9 ? '9+' : unreadChats})` : ''}</span>
-              </Link>
+              <>
+                <Link
+                  to="/tasks"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${location.pathname === '/tasks' ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' : 'text-slate-700 hover:text-emerald-700 hover:bg-emerald-50'}`}
+                >
+                  Explore Tasks
+                </Link>
+                <Link
+                  to="/achievements"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${location.pathname === '/achievements' ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' : 'text-slate-700 hover:text-emerald-700 hover:bg-emerald-50'}`}
+                >
+                  Leaderboard & Badges
+                </Link>
+                <Link
+                  to="/messages"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium ${location.pathname === '/messages' ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' : 'text-slate-700 hover:text-emerald-700 hover:bg-emerald-50'}`}
+                >
+                  <span className="flex items-center gap-2"><MessageSquare className="w-4 h-4" /> Chats{unreadChats > 0 ? ` (${unreadChats > 9 ? '9+' : unreadChats})` : ''}</span>
+                </Link>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setShowAiModal(true);
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors"
+                >
+                  AI Assistant Chat
+                </button>
+              </>
             )}
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setShowAiModal(true);
-              }}
-              className="w-full text-left px-3 py-2 rounded-lg text-sm font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors"
-            >
-              AI Assistant Chat
-            </button>
           </div>
         )}
       </header>
