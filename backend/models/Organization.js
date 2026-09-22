@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const organizationSchema = new mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true, trim: true },
     description: { type: String, default: '' },
     website: { type: String, default: '' },

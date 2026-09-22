@@ -86,7 +86,7 @@ const userSchema = new mongoose.Schema(
 
     // Portfolio
     portfolioPublic: { type: Boolean, default: true },
-    portfolioUsername: { type: String, sparse: true, trim: true, lowercase: true },
+    portfolioUsername: { type: String, trim: true, lowercase: true },
     categoriesContributed: [String],
     resumeDescriptions: [
       {
