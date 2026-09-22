@@ -75,9 +75,12 @@ app.use('/api/learning', require('./routes/matchingRoutes'));
 
 // Health Check
 app.get('/api/health', (req, res) => {
+  const mongoose = require('mongoose');
+  const dbStates = ['disconnected', 'connected', 'connecting', 'disconnecting'];
   res.json({
     status: 'online',
     appName: 'Micro-Volunteer Match API v2.0',
+    db: dbStates[mongoose.connection.readyState] || 'unknown',
     features: ['AI Matching', 'Certificates', 'Teams', 'Challenges', 'Organizations', 'Portfolio', 'Impact Map'],
     time: new Date().toISOString(),
   });
